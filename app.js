@@ -29,6 +29,7 @@ app.use(morgan(function(tokens,req,res){
         ].join(' ');
     }
 }))
+
 //omit empty query or body
 app.use(function(req,res,next){
     if (req.method == 'GET' && JSON.stringify(req.query) != JSON.stringify({})){
@@ -43,6 +44,7 @@ app.use(function(req,res,next){
 app.use(bodyParser.urlencoded({extended:false}))
 app.use(express.static(path.join(__dirname,'public')))
 
+//==============ROUTES=================
 app.use('/admin',adminRoutes)
 app.use('/shop',shopRoutes)
 
@@ -50,6 +52,8 @@ app.get('/',(req,res,next)=>{
     res.send('<h1>hello this is home page</h1>')
 })
 
+//==========ERROR CONTROLLER
 app.use(errorController.get404)
+
 
 app.listen(PORT, () => { console.log(`server running at ${PORT}`) })
