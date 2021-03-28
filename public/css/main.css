@@ -165,8 +165,11 @@ form {
   margin: 0;
 }
 
-.card__image {
-  width: 100%;
+.image {
+  height: 20rem;
+}
+.image img {
+  height: 100%;
 }
 
 .card__image img {

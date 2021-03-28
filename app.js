@@ -3,6 +3,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const path = require('path')
 const morgan = require('morgan')
+const sequelize = require('./utils/database')
 
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
@@ -52,8 +53,13 @@ app.get('/',(req,res,next)=>{
     res.send('<h1>hello this is home page</h1>')
 })
 
-//==========ERROR CONTROLLER
+//==========ERROR CONTROLLER=============
 app.use(errorController.get404)
 
+sequelize.sync().then(result => {
+    // console.log(result);
+}).catch(err => {
+    console.log(err);
+})
 
 app.listen(PORT, () => { console.log(`server running at ${PORT}`) })
