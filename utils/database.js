@@ -1,4 +1,15 @@
-const Sequelize = require('sequelize')
-const sequelize = new Sequelize('node-complete', 'root', 'welcome123', { dialect: 'mysql', host: 'localhost' });
+const mongoose = require('mongoose')
+global.ObjectId = mongoose.Types.ObjectId
+const mongoConnect = () => {
+    mongoose.connect('mongodb://localhost:27017/shop', {
+        useNewUrlParser: true, useUnifiedTopology: true
+    })
+        .then(result => {
+            console.log('Connected to the database')
+        })
+        .catch(err => {
+            throw err;
+        })
+}
 
-module.exports = sequelize;
+module.exports = mongoConnect;

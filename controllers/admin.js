@@ -10,33 +10,26 @@ exports.getAddProduct = (req, res, next) => {
 }
 exports.postAddProduct = (req, res, next) => {
     const { title, imageUrl, description, price } = req.body;
-    req.user.createProduct({
-        title: title,
-        price: price,
-        description: description,
-        imageUrl: imageUrl,
-    }).then(result => {
-        // console.log(result);
-        res.redirect('/shop/products');
-    }).catch(err => {
-        console.log(err);
-    });
-
-    // const product = new Product(null, title, imageUrl, description, price);
-    // product.save()
-    //     .then(() => {
-    //         res.redirect('/shop/products');
-    //     })
-    //     .catch(err => { console.log(err); });
+    const userId = req.user.id
+    const product = new Product({
+        title, imageUrl, description, price, userId
+    })
+    product.save()
+        .then(result => {
+            res.redirect('/shop/products');
+        })
+        .catch(err => {
+            console.log(err)
+        })
 }
 exports.getEditProduct = (req, res, next) => {
     const editMode = req.query.edit;
     const prodId = req.params.productId;
     if (editMode) { 
-        req.user.getProducts({ where: { id: prodId } })
-            // Product.findByPk(prodId)
+        // req.user.getProducts({ where: { id: prodId } })
+        Product.findById(prodId)
             .then(products => {
-                const product = products[0]
+                const product = products
                 if (!product) { return res.redirect('/') }
                 return res.render('admin/edit-product',
                     {
@@ -55,7 +48,7 @@ exports.getEditProduct = (req, res, next) => {
 exports.postEditProduct = (req, res, next) => {
     const { prodId, title: updatedTitle, imageUrl: updatedImageUrl, description: updatedDescription, price: updatedPrice } = req.body;
 
-    Product.findByPk(prodId)
+    Product.findById(prodId)
         .then(product => {
             product.title = updatedTitle
             product.imageUrl = updatedImageUrl
@@ -72,8 +65,10 @@ exports.postEditProduct = (req, res, next) => {
         })
 }
 exports.getProducts = (req, res, next) => {
-    req.user.getProducts()
+    Product.find()
+        .populate('userId')
         .then(products => {
+            console.log('adminproducts', products)
             res.render('admin/products', {
                 prods: products,
                 pageTitle: 'Admin Products',
@@ -87,12 +82,9 @@ exports.getProducts = (req, res, next) => {
 exports.deleteProduct = (req, res, next) => {
     const { productId } = req.body;
     console.log(productId);
-    Product.findByPk(productId)
-        .then(product => {
-            return product.destroy()
-        })
+    Product.findByIdAndDelete(productId)
         .then(result => {
-            console.log('DESTROYED A PRODUCT');
+            console.log('Deleted A PRODUCT');
             res.redirect('/admin/products')
         })
         .catch(err => {

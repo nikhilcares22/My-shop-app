@@ -6,15 +6,15 @@
     <%if(orders.length<0){%> 
       <h1>nothing here</h1>
     <%}else{%> 
-      <ul>
+      <ul class="orders">
         <%orders.forEach(order=>{%>
-          <li>
+          <li class="orders__item">
             <h1>
               #<%=order.id%>
-              <ul>
+              <ul class="orders__products">
                 <%order.products.forEach(product=>{%>
-                  <li>
-                    <%=product.title%>  (<%=product.orderItem.quantity%>)
+                  <li class="orders__products-item">
+                    <%=product.product.title%>  (<%=product.quantity%>)
                   </li>
                 <%})%>
               </ul>
