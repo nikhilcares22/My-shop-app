@@ -1,3 +1,4 @@
+const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 const userSchema = Schema({
@@ -6,6 +7,10 @@ const userSchema = Schema({
         required: true
     },
     email: {
+        type: String,
+        required: true
+    },
+    password: {
         type: String,
         required: true
     },
@@ -19,8 +24,28 @@ const userSchema = Schema({
             quantity: { type: Number, required: true }
         }]
     },
+    resetToken: String,
+    resetTokenExpiration: Date
 });
 
+userSchema.pre('save', function (next) {
+    return new Promise((resolve, reject) => {
+        bcrypt.hash(this.password, 12)
+            .then(data => {
+                this.password = data
+                resolve(next())
+            })
+    })
+})
+
+userSchema.methods.comparePass = function (password) {
+    return new Promise((resolve, reject) => {
+        bcrypt.compare(password, this.password)
+            .then(data => {
+                return resolve(data)
+            })
+    })
+}
 userSchema.methods.addToCart = function (product) {
     const cartProductIndex = this.cart.items.findIndex(cp =>
         cp.productId.toString() === product._id.toString()
@@ -44,6 +69,7 @@ userSchema.methods.addToCart = function (product) {
     return this.save();
 }
 userSchema.methods.removeFromCart = function (productId) {
+    console.log(productId);
     const updatedCartItems = this.cart.items.filter(item => {
         return item.productId.toString() !== productId.toString()
     })

@@ -5,7 +5,7 @@ exports.getAddProduct = (req, res, next) => {
         {
             pageTitle: 'Add Product',
             path: '/admin/add-product',
-            editing: false
+            editing: false,
         });
 }
 exports.postAddProduct = (req, res, next) => {
@@ -36,7 +36,7 @@ exports.getEditProduct = (req, res, next) => {
                         pageTitle: 'Edit Product',
                         path: '/admin/edit-product',
                         editing: editMode,
-                        product: product
+                        product: product,
                     });
             })
             .catch(err => { console.log(err); })
@@ -57,7 +57,6 @@ exports.postEditProduct = (req, res, next) => {
             return product.save();
         })
         .then(result => {
-            console.log(`Updated Product`);
             res.redirect('/admin/products')
         })
         .catch(err => {
@@ -68,11 +67,10 @@ exports.getProducts = (req, res, next) => {
     Product.find()
         .populate('userId')
         .then(products => {
-            console.log('adminproducts', products)
             res.render('admin/products', {
                 prods: products,
                 pageTitle: 'Admin Products',
-                path: "/admin/products"
+                path: "/admin/products",
             })
         })
         .catch(err => {
@@ -81,10 +79,8 @@ exports.getProducts = (req, res, next) => {
 }
 exports.deleteProduct = (req, res, next) => {
     const { productId } = req.body;
-    console.log(productId);
     Product.findByIdAndDelete(productId)
         .then(result => {
-            console.log('Deleted A PRODUCT');
             res.redirect('/admin/products')
         })
         .catch(err => {

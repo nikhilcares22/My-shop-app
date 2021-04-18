@@ -8,7 +8,7 @@ exports.getProducts = (req, res, next) => {
       res.render('shop/product-list', {
         prods: products,
         pageTitle: 'All Products',
-        path: "/products"
+        path: "/products",
       })
     })
     .catch(err => {
@@ -23,18 +23,19 @@ exports.getProduct = (req, res, next) => {
         {
           path: '/products',
           product: product,
-          pageTitle: 'Product Details'
+          pageTitle: 'Product Details',
         })
     })
     .catch(err => { console.log(err) })
 }
 exports.getIndex = (req, res, next) => {
+  console.log(req.session)
   Product.find()
     .then(products => {
       res.render('shop/index', {
         prods: products,
         pageTitle: 'Shop',
-        path: "/"
+        path: "/",
       })
     })
     .catch(err => {
@@ -49,7 +50,7 @@ exports.getCart = (req, res, next) => {
       res.render('shop/cart', {
         path: '/cart',
         pageTitle: 'Your Cart',
-        products: products
+        products: products,
       })
     }).catch(err => {
       console.log(err);
@@ -62,7 +63,6 @@ exports.postCart = (req, res, next) => {
       return req.user.addToCart(product);
     })
     .then(result => {
-      console.log(result)
       res.redirect('/shop/cart')
     })
     .catch(err => {
@@ -83,7 +83,7 @@ exports.postOrder = (req, res, next) => {
       const order = new Order({
         user: {
           userId: req.user._id,
-          name: req.user.name,
+          name: req.user._doc.name,
         },
         products: products
       })
@@ -108,7 +108,7 @@ exports.getOrders = (req, res, next) => {
     res.render('shop/orders', {
       path: '/orders',
       pageTitle: 'Your Orders',
-      orders: orders
+      orders: orders,
     })
   })
     .catch(err => {
@@ -116,8 +116,8 @@ exports.getOrders = (req, res, next) => {
     })
 }
 exports.postCartDelete = (req, res, next) => {
-  const { prodId } = req.query;
-  req.user.removeFromCart(prodId)
+  const { productId } = req.body;
+  req.user.removeFromCart(productId)
     .then(result => {
       res.redirect('/shop/cart')
     })
@@ -125,5 +125,3 @@ exports.postCartDelete = (req, res, next) => {
       console.log(err);
     })
 }
-
-Array.prototype.sort
